@@ -57,4 +57,4 @@ publishing {
   }
 }
 
-afterReleaseBuild.finalizedBy('publish')
+afterReleaseBuild.finalizedBy(publish)
