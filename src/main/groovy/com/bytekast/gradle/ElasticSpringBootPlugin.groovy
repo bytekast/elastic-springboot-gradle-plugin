@@ -78,7 +78,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
 
   private static void createDockerTasks(Project p) {
 
-    p.task("buildDocker", DockerTask.class) {
+    p.tasks.create("buildDocker", DockerTask.class) {
       push = false
       applicationName = jar.baseName
       runCommand "apt-get update"
@@ -88,7 +88,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
       defaultCommand(['java', '-jar', jar.archiveName])
     }
 
-    p.task('pushDocker') {
+    p.tasks.create('pushDocker') {
       def localTag = "${project.group}/${project.name}:${version}"
       def deployTag = "${AWS_DOCKER_REPO}/${project.name}:${version}"
       exec {
@@ -102,7 +102,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
   }
 
   private static void createDeployTasks(Project p) {
-    p.task('prepareDeploy') {
+    p.tasks.create('prepareDeploy') {
       def deployTag = "${AWS_DOCKER_REPO}/${project.name}:${version}"
       def json = [
           AWSEBDockerrunVersion: '1',
