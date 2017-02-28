@@ -80,19 +80,17 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
 
     p.tasks.create("buildDocker", DockerTask.class) {
       push = false
-      applicationName = jar.baseName
+      applicationName = "${p.name}-${p.version}"
       runCommand "apt-get update"
-      addFile {
-        from jar
-        rename {'app.jar'}
-      }
+      workingDir '/app'
+      addFile p.buildFile.absolutePath, "/app/${p.buildFile.name}"
       exposePort 8080
-      defaultCommand(['java', '-jar', '/app.jar'])
+      defaultCommand(['java', '-jar', p.buildFile.name])
     }
 
     p.tasks.create('pushDocker') {
-      def localTag = "${project.group}/${project.name}:${version}"
-      def deployTag = "${AWS_DOCKER_REPO}/${project.name}:${version}"
+      def localTag = "${p.group}/${p.name}:${p.version}"
+      def deployTag = "${AWS_DOCKER_REPO}/${p.name}:${p.version}"
       exec {
         commandLine('docker', 'tag', localTag, deployTag)
       }
@@ -105,7 +103,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
 
   private static void createDeployTasks(Project p) {
     p.tasks.create('prepareDeploy') {
-      def deployTag = "${AWS_DOCKER_REPO}/${project.name}:${version}"
+      def deployTag = "${AWS_DOCKER_REPO}/${p.name}:${p.version}"
       def json = [
           AWSEBDockerrunVersion: '1',
           Image                : [
@@ -116,7 +114,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
               [ContainerPort: '8080']
           ]
       ]
-      def file = File.newInstance(projectDir, 'Dockerrun.aws.json')
+      def file = File.newInstance(p.projectDir, 'Dockerrun.aws.json')
       file.text = groovy.json.JsonBuilder.newInstance(json).toPrettyString()
     }
   }
