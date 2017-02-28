@@ -28,10 +28,6 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
       repositories {
         mavenCentral()
       }
-      dependencies {
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE')
-        classpath('se.transmode.gradle:gradle-docker:1.2')
-      }
     }
   }
 
