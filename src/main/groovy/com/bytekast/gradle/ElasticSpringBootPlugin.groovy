@@ -90,7 +90,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
 
     p.tasks.create('pushDocker') {
       def localTag = "${p.group}/${p.name}:${p.version}"
-      def deployTag = "${AWS_DOCKER_REPO}/${p.name}:${p.version}"
+      def deployTag = "${p.property('AWS_DOCKER_REPO')}/${p.name}:${p.version}"
       exec {
         commandLine('docker', 'tag', localTag, deployTag)
       }
@@ -103,7 +103,7 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
 
   private static void createDeployTasks(Project p) {
     p.tasks.create('prepareDeploy') {
-      def deployTag = "${AWS_DOCKER_REPO}/${p.name}:${p.version}"
+      def deployTag = "${p.property('AWS_DOCKER_REPO')}/${p.name}:${p.version}"
       def json = [
           AWSEBDockerrunVersion: '1',
           Image                : [
