@@ -82,10 +82,12 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
       push = false
       applicationName = jar.baseName
       runCommand "apt-get update"
-      workingDir '/app'
-      addFile jar.archivePath, "/app/${jar.archiveName}"
+      addFile {
+        from jar
+        rename {'app.jar'}
+      }
       exposePort 8080
-      defaultCommand(['java', '-jar', jar.archiveName])
+      defaultCommand(['java', '-jar', '/app.jar'])
     }
 
     p.tasks.create('pushDocker') {
