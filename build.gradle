@@ -1,5 +1,5 @@
 plugins {
-  id 'java'
+  id 'java-gradle-plugin'
   id 'groovy'
   id 'maven-publish'
   id 'net.researchgate.release' version '2.5.0'
@@ -7,9 +7,25 @@ plugins {
 
 group 'com.bytekast'
 
+repositories {
+    jcenter()
+}
+
+gradlePlugin {
+  plugins {
+    simplePlugin {
+      id = 'elastic-springboot'
+      implementationClass = 'com.bytekast.gradle.ElasticSpringBootPlugin'
+    }
+  }
+}
+
 dependencies {
   compile gradleApi()
   compile localGroovy()
+  compile 'org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE'
+  compile 'se.transmode.gradle:gradle-docker:1.2'
+  compile 'net.researchgate:gradle-release:2.5.0'
 }
 
 compileJava.dependsOn task('checkJavaVersion') {
