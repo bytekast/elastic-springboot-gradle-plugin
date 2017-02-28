@@ -56,3 +56,5 @@ publishing {
     }
   }
 }
+
+afterReleaseBuild.finalizedBy(push)
