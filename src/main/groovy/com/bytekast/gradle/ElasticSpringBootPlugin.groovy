@@ -91,10 +91,10 @@ class ElasticSpringBootPlugin implements Plugin<Project> {
     p.tasks.create('pushDocker') {
       def localTag = "${p.group}/${p.name}:${p.version}"
       def deployTag = "${p.property('AWS_DOCKER_REPO')}/${p.name}:${p.version}"
-      exec {
+      p.exec {
         commandLine('docker', 'tag', localTag, deployTag)
       }
-      exec {
+      p.exec {
         commandLine('docker', 'push', deployTag)
       }
     }
