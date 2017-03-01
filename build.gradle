@@ -1,0 +1,60 @@
+plugins {
+  id 'java-gradle-plugin'
+  id 'groovy'
+  id 'maven-publish'
+  id 'net.researchgate.release' version '2.5.0'
+}
+
+group 'com.bytekast'
+
+repositories {
+    jcenter()
+}
+
+gradlePlugin {
+  plugins {
+    simplePlugin {
+      id = 'elastic-springboot'
+      implementationClass = 'com.bytekast.gradle.ElasticSpringBootPlugin'
+    }
+  }
+}
+
+dependencies {
+  compile gradleApi()
+  compile localGroovy()
+  compile 'org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE'
+  compile 'se.transmode.gradle:gradle-docker:1.2'
+  compile 'net.researchgate:gradle-release:2.5.0'
+}
+
+compileJava.dependsOn task('checkJavaVersion') {
+  doLast {
+    if (!JavaVersion.current().isJava8Compatible()) {
+      throw new IllegalStateException("ERROR: Java 1.8 required but ${JavaVersion.current()} found. Change your JAVA_HOME environment variable.");
+    }
+  }
+}
+
+publishing {
+  repositories {
+    maven {
+      url "s3://bytekast-maven/${version.endsWith('-SNAPSHOT') ? 'snapshots' : 'releases'}"
+      credentials(AwsCredentials) {
+        accessKey "$AWS_ACCESS_KEY"
+        secretKey "$AWS_SECRET_KEY"
+      }
+    }
+  }
+
+  publications {
+    mavenJava(MavenPublication) {
+      version = project.version
+      artifactId = project.name
+      groupId = project.group
+      artifact("$buildDir/libs/${project.name}-${project.version}.jar")
+    }
+  }
+}
+
+afterReleaseBuild.finalizedBy(publish)
